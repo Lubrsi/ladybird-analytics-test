@@ -48,5 +48,45 @@ cookieconsent.run({"notice_banner_type":"simple","consent_type":"express","palet
 
 <a href="#" id="open_preferences_center">Update cookies preferences</a>
 
+<script>
+    document.addEventListener("cc_userChangedConsent", () => {
+        function updateGtagConsent() {
+            if (!window.gtag)
+                return;
+
+            if (!cookieconsent.cookieConsentObject.userConsent.acceptedLevels.targeting) {
+                gtag('set', 'allow_google_signals', false);
+                gtag('set', 'allow_ad_personalization_signals', false);
+                gtag('consent', 'update', {
+                    'ad_storage': 'denied',
+                    'analytics_storage': 'denied',
+                    'functionality_storage': 'denied',
+                    'personalization_storage': 'denied',
+                    'security_storage': 'denied'
+                });
+            } else {
+                gtag('set', 'allow_google_signals', true);
+                gtag('set', 'allow_ad_personalization_signals', true);
+                gtag('consent', 'update', {
+                    'ad_storage': 'granted',
+                    'analytics_storage': 'granted',
+                    'functionality_storage': 'granted',
+                    'personalization_storage': 'granted',
+                    'security_storage': 'granted'
+                });
+            }
+        }
+
+        // The event is dispatched before it updates acceptedLevels.
+        if (window.queueMicrotask) {
+            queueMicrotask(() => updateGtagConsent());
+        } else {
+            setTimeout(() => {
+                updateGtagConsent();
+            }, 0);
+        }
+    });
+</script>
+
 </body>
 </html>
